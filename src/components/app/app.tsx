@@ -7,7 +7,7 @@ import { IngredientDetails } from '@components/ingredient-details/ingredient-det
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 import { Preloader } from '@components/preloader/preloader';
-import { getIngredients } from '@services/api';
+import { getIngredients } from '@utils/api.ts';
 
 import type { TIngredient } from '@utils/types';
 

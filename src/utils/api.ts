@@ -1,6 +1,6 @@
-import { INGREDIENTS_ENDPOINT } from '@utils/constants';
+import { INGREDIENTS_ENDPOINT } from '@utils/constants.ts';
 
-import type { TIngredient } from '@utils/types';
+import type { TIngredient } from '@utils/types.ts';
 
 type TIngredientsResponse = {
   success: boolean;
