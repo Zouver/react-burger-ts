@@ -1,5 +1,5 @@
 import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { ModalOverlay } from '@components/modal-overlay/modal-overlay';
@@ -15,19 +15,22 @@ type TModalProps = {
 const modalRoot = document.body;
 
 export const Modal = ({ title, children, onClose }: TModalProps): React.JSX.Element => {
-  useEffect(() => {
-    const handleEscClose = (event: KeyboardEvent): void => {
+  const handleEscClose = useCallback(
+    (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         onClose();
       }
-    };
+    },
+    [onClose]
+  );
 
+  useEffect(() => {
     document.addEventListener('keydown', handleEscClose);
 
     return (): void => {
       document.removeEventListener('keydown', handleEscClose);
     };
-  }, [onClose]);
+  }, [handleEscClose]);
 
   return createPortal(
     <div className={styles.wrapper} role="presentation">
