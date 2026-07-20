@@ -18,14 +18,14 @@
   gap: 16px;
   max-height: calc(100vh - 420px);
   margin: 0;
-  padding: 0;
+  padding: 16px 0;
   overflow-y: auto;
   list-style: none;
 }
 
 .ingredient_item {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
+  display: flex;
+  justify-content: end;
   align-items: center;
   gap: 8px;
 }
