@@ -1,0 +1,6 @@
+.preloader {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 320px;
+}

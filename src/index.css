@@ -1,5 +1,15 @@
 body {
   margin: 0;
+  font-family: 'Jet Brains Mono', serif;
+  background-color: var(--background-alt);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 /* Fix for scrollbar */
