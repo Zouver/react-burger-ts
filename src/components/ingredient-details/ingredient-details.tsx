@@ -1,3 +1,5 @@
+import { InfoIcon } from '@krgaa/react-developer-burger-ui-components';
+
 import type { TIngredient } from '@utils/types';
 
 import styles from './ingredient-details.module.css';
@@ -23,6 +25,9 @@ export const IngredientDetails = ({
 
   return (
     <article className={styles.details}>
+      <div className={styles.icon_wrapper}>
+        <InfoIcon type="primary" />
+      </div>
       <img alt={ingredient.name} className={styles.image} src={ingredient.image_large} />
       <h3 className={`${styles.title} text text_type_main-medium mt-4 mb-8`}>
         {ingredient.name}
