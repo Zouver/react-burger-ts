@@ -1,5 +1,5 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { TIngredient } from '@utils/types';
 
@@ -51,14 +51,14 @@ export const BurgerIngredients = ({
     [ingredients]
   );
 
-  const handleTabClick = (tab: string): void => {
+  const handleTabClick = useCallback((tab: string): void => {
     const nextTab = tab as TIngredientType;
 
     setCurrentTab(nextTab);
     sectionRefs.current[nextTab]?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
-  const handleScroll = (): void => {
+  const handleScroll = useCallback((): void => {
     const containerTop = containerRef.current?.getBoundingClientRect().top ?? 0;
     const closestSection = (
       Object.entries(sectionRefs.current) as [TIngredientType, HTMLElement | null][]
@@ -73,7 +73,7 @@ export const BurgerIngredients = ({
     if (closestSection) {
       setCurrentTab(closestSection.type);
     }
-  };
+  }, []);
 
   return (
     <section className={styles.burger_ingredients}>
