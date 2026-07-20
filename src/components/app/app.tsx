@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
@@ -28,6 +28,22 @@ export const App = (): React.JSX.Element => {
   const [error, setError] = useState('');
   const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  const handleIngredientClick = useCallback((ingredient: TIngredient): void => {
+    setSelectedIngredient(ingredient);
+  }, []);
+
+  const handleIngredientModalClose = useCallback((): void => {
+    setSelectedIngredient(null);
+  }, []);
+
+  const handleOrderModalOpen = useCallback((): void => {
+    setIsOrderModalOpen(true);
+  }, []);
+
+  const handleOrderModalClose = useCallback((): void => {
+    setIsOrderModalOpen(false);
+  }, []);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -81,22 +97,22 @@ export const App = (): React.JSX.Element => {
           <section className={`${styles.main} pl-5 pr-5`}>
             <BurgerIngredients
               ingredients={ingredients}
-              onIngredientClick={setSelectedIngredient}
+              onIngredientClick={handleIngredientClick}
             />
             <BurgerConstructor
               ingredients={burgerConstructorIngredients}
-              onOrderClick={() => setIsOrderModalOpen(true)}
+              onOrderClick={handleOrderModalOpen}
             />
           </section>
         ) : null}
       </main>
       {selectedIngredient ? (
-        <Modal title="Детали ингредиента" onClose={() => setSelectedIngredient(null)}>
+        <Modal title="Детали ингредиента" onClose={handleIngredientModalClose}>
           <IngredientDetails ingredient={selectedIngredient} />
         </Modal>
       ) : null}
       {isOrderModalOpen ? (
-        <Modal title="" onClose={() => setIsOrderModalOpen(false)}>
+        <Modal title="Детали заказа" onClose={handleOrderModalClose}>
           <OrderDetails />
         </Modal>
       ) : null}
