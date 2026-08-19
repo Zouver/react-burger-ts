@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
@@ -7,78 +7,103 @@ import { IngredientDetails } from '@components/ingredient-details/ingredient-det
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 import { Preloader } from '@components/preloader/preloader';
-import { getIngredients } from '@utils/api.ts';
-
-import type { TIngredient } from '@utils/types';
+import {
+  useCreateOrderMutation,
+  useGetIngredientsQuery,
+} from '@services/api/stellarApi.ts';
+import {
+  clearBurgerConstructor,
+  selectBurgerConstructor,
+} from '@services/burgerConstructor/burgerConstructorSlice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks.ts';
+import {
+  clearSelectedIngredient,
+  selectSelectedIngredient,
+} from '@services/ingredientDetails/ingredientDetailsSlice.ts';
 
 import styles from './app.module.css';
 
-const getDefaultConstructorIngredients = (ingredients: TIngredient[]): TIngredient[] => {
-  const bun = ingredients.find((ingredient) => ingredient.type === 'bun');
-  const fillings = ingredients
-    .filter((ingredient) => ingredient.type !== 'bun')
-    .slice(0, 3);
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (typeof error === 'object' && error && 'data' in error) {
+    const data = error.data;
 
-  return bun ? [bun, ...fillings] : fillings;
+    if (
+      typeof data === 'object' &&
+      data &&
+      'message' in data &&
+      typeof data.message === 'string'
+    ) {
+      return data.message;
+    }
+  }
+
+  return fallback;
 };
 
 export const App = (): React.JSX.Element => {
-  const [ingredients, setIngredients] = useState<TIngredient[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+  const dispatch = useAppDispatch();
+  const { bun, ingredients: constructorIngredients } = useAppSelector(
+    selectBurgerConstructor
+  );
+  const selectedIngredient = useAppSelector(selectSelectedIngredient);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const {
+    data: ingredients = [],
+    error: ingredientsError,
+    isError: isIngredientsError,
+    isFetching: isIngredientsFetching,
+    isLoading: isIngredientsLoading,
+  } = useGetIngredientsQuery();
+  const [
+    createOrder,
+    {
+      data: orderData,
+      error: orderError,
+      isError: isOrderError,
+      isLoading: isOrderLoading,
+      reset: resetOrder,
+    },
+  ] = useCreateOrderMutation();
 
-  const handleIngredientClick = useCallback((ingredient: TIngredient): void => {
-    setSelectedIngredient(ingredient);
-  }, []);
+  const handleOrderClick = async (): Promise<void> => {
+    if (!bun || isOrderLoading) {
+      return;
+    }
 
-  const handleIngredientModalClose = useCallback((): void => {
-    setSelectedIngredient(null);
-  }, []);
+    const ingredientIds = [
+      bun._id,
+      ...constructorIngredients.map((ingredient) => ingredient._id),
+      bun._id,
+    ];
 
-  const handleOrderModalOpen = useCallback((): void => {
-    setIsOrderModalOpen(true);
-  }, []);
+    try {
+      await createOrder(ingredientIds).unwrap();
+      dispatch(clearBurgerConstructor());
+      setIsOrderModalOpen(true);
+    } catch (_error) {
+      setIsOrderModalOpen(false);
+    }
+  };
 
-  const handleOrderModalClose = useCallback((): void => {
+  const handleIngredientModalClose = (): void => {
+    dispatch(clearSelectedIngredient());
+  };
+
+  const handleOrderModalClose = (): void => {
     setIsOrderModalOpen(false);
-  }, []);
+    resetOrder();
+  };
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const loadIngredients = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-        setError('');
-
-        const data = await getIngredients(abortController.signal);
-
-        setIngredients(data);
-      } catch (loadError) {
-        if (loadError instanceof Error && loadError.name === 'AbortError') {
-          return;
-        }
-
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : 'Неизвестная ошибка при загрузке ингредиентов.'
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadIngredients();
-
-    return (): void => {
-      abortController.abort();
-    };
-  }, []);
-
-  const burgerConstructorIngredients = getDefaultConstructorIngredients(ingredients);
+  const isLoading = isIngredientsLoading || isIngredientsFetching;
+  const error = isIngredientsError
+    ? getErrorMessage(
+        ingredientsError,
+        'Не удалось загрузить ингредиенты. Попробуйте позже.'
+      )
+    : null;
+  const orderErrorMessage = isOrderError
+    ? getErrorMessage(orderError, 'Не удалось оформить заказ. Попробуйте позже.')
+    : null;
 
   return (
     <div className={styles.app}>
@@ -95,13 +120,11 @@ export const App = (): React.JSX.Element => {
         ) : null}
         {!isLoading && !error ? (
           <section className={`${styles.main} pl-5 pr-5`}>
-            <BurgerIngredients
-              ingredients={ingredients}
-              onIngredientClick={handleIngredientClick}
-            />
+            <BurgerIngredients ingredients={ingredients} />
             <BurgerConstructor
-              ingredients={burgerConstructorIngredients}
-              onOrderClick={handleOrderModalOpen}
+              isOrderLoading={isOrderLoading}
+              onOrderClick={handleOrderClick}
+              orderError={orderErrorMessage}
             />
           </section>
         ) : null}
@@ -111,9 +134,9 @@ export const App = (): React.JSX.Element => {
           <IngredientDetails ingredient={selectedIngredient} />
         </Modal>
       ) : null}
-      {isOrderModalOpen ? (
+      {isOrderModalOpen && orderData ? (
         <Modal title="Детали заказа" onClose={handleOrderModalClose}>
-          <OrderDetails />
+          <OrderDetails orderNumber={orderData.order.number} />
         </Modal>
       ) : null}
     </div>

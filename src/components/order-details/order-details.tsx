@@ -3,12 +3,10 @@ import { CheckMarkIcon } from '@krgaa/react-developer-burger-ui-components';
 import styles from './order-details.module.css';
 
 type TOrderDetailsProps = {
-  orderNumber?: number;
+  orderNumber: number;
 };
 
-export const OrderDetails = ({
-  orderNumber = 12345,
-}: TOrderDetailsProps): React.JSX.Element => {
+export const OrderDetails = ({ orderNumber }: TOrderDetailsProps): React.JSX.Element => {
   return (
     <section className={styles.order}>
       <p className="text text_type_digits-large mt-4 mb-8">{orderNumber}</p>

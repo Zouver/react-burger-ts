@@ -1,3 +1,15 @@
+:root {
+  --background: #1c1c21;
+  --background-alt: #131316;
+  --background-element: #2f2f37;
+  --bottom-constructor-item-border-radius: 40px 40px 88px 88px;
+  --colors-interface-accent: #4c4cff;
+  --colors-interface-error: #e52b1a;
+  --text-inactive-color: #8585ad;
+  --text-primary-color: #f2f2f3;
+  --top-constructor-item-border-radius: 88px 88px 40px 40px;
+}
+
 body {
   margin: 0;
   font-family: 'Jet Brains Mono', serif;
