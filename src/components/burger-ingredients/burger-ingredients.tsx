@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { Link, useLocation } from 'react-router-dom';
 
+import { stellarApi } from '@services/api/stellarApi.ts';
 import { selectIngredientCounters } from '@services/burgerConstructor/burgerConstructorSlice.ts';
 import { useAppSelector } from '@services/hooks.ts';
 import { IngredientDragType } from '@utils/dnd.ts';
@@ -25,9 +26,7 @@ type TIngredientCardProps = {
   ingredient: TIngredient;
 };
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-};
+const selectIngredients = stellarApi.endpoints.getIngredients.select();
 
 const IngredientCard = ({
   count,
@@ -68,10 +67,9 @@ const IngredientCard = ({
   );
 };
 
-export const BurgerIngredients = ({
-  ingredients,
-}: TBurgerIngredientsProps): React.JSX.Element => {
+export const BurgerIngredients = (): React.JSX.Element => {
   const counters = useAppSelector(selectIngredientCounters);
+  const ingredients = useAppSelector(selectIngredients).data ?? [];
   const [currentTab, setCurrentTab] = useState<TIngredientType>('bun');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRefs = useRef<Record<TIngredientType, HTMLElement | null>>({

@@ -43,7 +43,6 @@ export const Home = (): React.JSX.Element => {
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const {
-    data: ingredients = [],
     error: ingredientsError,
     isError: isIngredientsError,
     isFetching: isIngredientsFetching,
@@ -110,7 +109,7 @@ export const Home = (): React.JSX.Element => {
       {!isLoading && !error ? (
         <DndProvider backend={HTML5Backend}>
           <section className={`${styles.main} pl-5 pr-5`}>
-            <BurgerIngredients ingredients={ingredients} />
+            <BurgerIngredients />
             <BurgerConstructor
               isOrderLoading={isOrderLoading}
               onOrderClick={handleOrderClick}
