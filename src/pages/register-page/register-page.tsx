@@ -4,9 +4,9 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useForm } from '@hooks/use-form.ts';
 import { getErrorMessage } from '@services/api/get-error-message.ts';
 import { useRegisterMutation } from '@services/api/stellarApi.ts';
 
@@ -16,9 +16,11 @@ import styles from '../auth-pages.module.css';
 
 export const RegisterPage = (): React.JSX.Element => {
   const [register, { error, isLoading }] = useRegisterMutation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { handleChange, values } = useForm({
+    email: '',
+    name: '',
+    password: '',
+  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -28,7 +30,7 @@ export const RegisterPage = (): React.JSX.Element => {
     }
 
     try {
-      await register({ email, name, password }).unwrap();
+      await register(values).unwrap();
     } catch (_error) {
       // RTK Query exposes the error via the mutation state for rendering.
     }
@@ -41,23 +43,23 @@ export const RegisterPage = (): React.JSX.Element => {
         <Input
           extraClass="mb-6"
           name="name"
-          onChange={(event) => setName(event.target.value)}
+          onChange={handleChange}
           placeholder="Имя"
-          value={name}
+          value={values.name}
         />
         <EmailInput
           extraClass="mb-6"
           name="email"
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={handleChange}
           placeholder="E-mail"
-          value={email}
+          value={values.email}
         />
         <PasswordInput
           extraClass="mb-6"
           name="password"
-          onChange={(event) => setPassword(event.target.value)}
+          onChange={handleChange}
           placeholder="Пароль"
-          value={password}
+          value={values.password}
         />
         <Button disabled={isLoading} htmlType="submit" size="medium" type="primary">
           {isLoading ? 'Регистрируем...' : 'Зарегистрироваться'}

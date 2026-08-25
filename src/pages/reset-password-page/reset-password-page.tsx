@@ -3,9 +3,9 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 
+import { useForm } from '@hooks/use-form.ts';
 import { getErrorMessage } from '@services/api/get-error-message.ts';
 import { useResetPasswordMutation } from '@services/api/stellarApi.ts';
 import { isPasswordResetRequested } from '@services/auth/tokenStorage.ts';
@@ -17,8 +17,7 @@ import styles from '../auth-pages.module.css';
 export const ResetPasswordPage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const [resetPassword, { error, isLoading }] = useResetPasswordMutation();
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState('');
+  const { handleChange, values } = useForm({ password: '', token: '' });
   const isResetRequested = isPasswordResetRequested();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -29,7 +28,7 @@ export const ResetPasswordPage = (): React.JSX.Element => {
     }
 
     try {
-      await resetPassword({ password, token }).unwrap();
+      await resetPassword(values).unwrap();
       void navigate('/login', { replace: true });
     } catch (_error) {
       // RTK Query exposes the error via the mutation state for rendering.
@@ -47,16 +46,16 @@ export const ResetPasswordPage = (): React.JSX.Element => {
         <PasswordInput
           extraClass="mb-6"
           name="password"
-          onChange={(event) => setPassword(event.target.value)}
+          onChange={handleChange}
           placeholder="Введите новый пароль"
-          value={password}
+          value={values.password}
         />
         <Input
           extraClass="mb-6"
           name="token"
-          onChange={(event) => setToken(event.target.value)}
+          onChange={handleChange}
           placeholder="Введите код из письма"
-          value={token}
+          value={values.token}
         />
         <Button disabled={isLoading} htmlType="submit" size="medium" type="primary">
           {isLoading ? 'Сохраняем...' : 'Сохранить'}

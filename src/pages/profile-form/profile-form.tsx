@@ -4,8 +4,9 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
+import { useForm } from '@hooks/use-form.ts';
 import { getErrorMessage } from '@services/api/get-error-message.ts';
 import { useUpdateUserMutation } from '@services/api/stellarApi.ts';
 import { selectUser } from '@services/auth/authSlice.ts';
@@ -18,23 +19,31 @@ import styles from './profile-form.module.css';
 export const ProfileForm = (): React.JSX.Element => {
   const user = useAppSelector(selectUser);
   const [updateUser, { error, isLoading }] = useUpdateUserMutation();
-  const [name, setName] = useState(user?.name ?? '');
-  const [email, setEmail] = useState(user?.email ?? '');
-  const [password, setPassword] = useState('');
+  const { handleChange, setValues, values } = useForm({
+    email: user?.email ?? '',
+    name: user?.name ?? '',
+    password: '',
+  });
 
   useEffect(() => {
-    setName(user?.name ?? '');
-    setEmail(user?.email ?? '');
-    setPassword('');
+    setValues({
+      email: user?.email ?? '',
+      name: user?.name ?? '',
+      password: '',
+    });
   }, [user]);
 
   const isChanged =
-    name !== (user?.name ?? '') || email !== (user?.email ?? '') || password !== '';
+    values.name !== (user?.name ?? '') ||
+    values.email !== (user?.email ?? '') ||
+    values.password !== '';
 
   const handleCancel = (): void => {
-    setName(user?.name ?? '');
-    setEmail(user?.email ?? '');
-    setPassword('');
+    setValues({
+      email: user?.email ?? '',
+      name: user?.name ?? '',
+      password: '',
+    });
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -45,7 +54,7 @@ export const ProfileForm = (): React.JSX.Element => {
     }
 
     try {
-      await updateUser({ email, name, password }).unwrap();
+      await updateUser(values).unwrap();
     } catch (_error) {
       // RTK Query exposes the error via the mutation state for rendering.
     }
@@ -57,25 +66,25 @@ export const ProfileForm = (): React.JSX.Element => {
         extraClass="mb-6"
         icon="EditIcon"
         name="name"
-        onChange={(event) => setName(event.target.value)}
+        onChange={handleChange}
         placeholder="Имя"
-        value={name}
+        value={values.name}
       />
       <EmailInput
         extraClass="mb-6"
         isIcon
         name="email"
-        onChange={(event) => setEmail(event.target.value)}
+        onChange={handleChange}
         placeholder="Логин"
-        value={email}
+        value={values.email}
       />
       <PasswordInput
         extraClass="mb-6"
         icon="EditIcon"
         name="password"
-        onChange={(event) => setPassword(event.target.value)}
+        onChange={handleChange}
         placeholder="Пароль"
-        value={password}
+        value={values.password}
       />
       {isChanged ? (
         <div className={styles.actions}>

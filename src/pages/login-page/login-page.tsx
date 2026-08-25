@@ -3,9 +3,9 @@ import {
   EmailInput,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { useForm } from '@hooks/use-form.ts';
 import { getErrorMessage } from '@services/api/get-error-message.ts';
 import { useLoginMutation } from '@services/api/stellarApi.ts';
 
@@ -22,8 +22,7 @@ export const LoginPage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [login, { error, isLoading }] = useLoginMutation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { handleChange, values } = useForm({ email: '', password: '' });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -33,7 +32,7 @@ export const LoginPage = (): React.JSX.Element => {
     }
 
     try {
-      await login({ email, password }).unwrap();
+      await login(values).unwrap();
 
       const state = location.state as TLocationState | null;
 
@@ -50,16 +49,16 @@ export const LoginPage = (): React.JSX.Element => {
         <EmailInput
           extraClass="mb-6"
           name="email"
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={handleChange}
           placeholder="E-mail"
-          value={email}
+          value={values.email}
         />
         <PasswordInput
           extraClass="mb-6"
           name="password"
-          onChange={(event) => setPassword(event.target.value)}
+          onChange={handleChange}
           placeholder="Пароль"
-          value={password}
+          value={values.password}
         />
         <Button disabled={isLoading} htmlType="submit" size="medium" type="primary">
           {isLoading ? 'Входим...' : 'Войти'}
