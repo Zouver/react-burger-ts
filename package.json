@@ -17,7 +17,7 @@
     "prepare": "husky",
     "prettier": "prettier \"./src/**/*.{js,jsx,ts,tsx,json,html,css,md}\" --write",
     "preview": "vite preview",
-    "stylelint": "stylelint \"./src/**/*.css\" --fix",
+    "stylelint": "stylelint \"./src/**/*.css\" --config stylelint.config.mjs --fix",
     "test": "vitest",
     "test:ui": "vitest --ui"
   },

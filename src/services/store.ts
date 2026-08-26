@@ -2,14 +2,10 @@ import { combineSlices, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
 import { stellarApi } from './api/stellarApi.ts';
+import { authSlice } from './auth/authSlice.ts';
 import { burgerConstructorSlice } from './burgerConstructor/burgerConstructorSlice.ts';
-import { ingredientDetailsSlice } from './ingredientDetails/ingredientDetailsSlice.ts';
 
-const rootReducer = combineSlices(
-  burgerConstructorSlice,
-  ingredientDetailsSlice,
-  stellarApi
-);
+const rootReducer = combineSlices(authSlice, burgerConstructorSlice, stellarApi);
 
 export const store = configureStore({
   devTools: import.meta.env.DEV,
