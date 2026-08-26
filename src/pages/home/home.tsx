@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
@@ -11,6 +12,7 @@ import {
   useCreateOrderMutation,
   useGetIngredientsQuery,
 } from '@services/api/stellarApi.ts';
+import { selectIsAuthenticated } from '@services/auth/authSlice.ts';
 import {
   clearBurgerConstructor,
   selectBurgerConstructor,
@@ -38,9 +40,12 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 
 export const Home = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { bun, ingredients: constructorIngredients } = useAppSelector(
     selectBurgerConstructor
   );
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const {
     error: ingredientsError,
@@ -61,6 +66,15 @@ export const Home = (): React.JSX.Element => {
 
   const handleOrderClick = async (): Promise<void> => {
     if (!bun || isOrderLoading) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      void navigate('/login', {
+        replace: true,
+        state: { from: location },
+      });
+
       return;
     }
 
