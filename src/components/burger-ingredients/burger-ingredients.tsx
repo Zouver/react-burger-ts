@@ -1,10 +1,11 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useDrag } from 'react-dnd';
+import { Link, useLocation } from 'react-router-dom';
 
+import { stellarApi } from '@services/api/stellarApi.ts';
 import { selectIngredientCounters } from '@services/burgerConstructor/burgerConstructorSlice.ts';
-import { useAppDispatch, useAppSelector } from '@services/hooks.ts';
-import { setSelectedIngredient } from '@services/ingredientDetails/ingredientDetailsSlice.ts';
+import { useAppSelector } from '@services/hooks.ts';
 import { IngredientDragType } from '@utils/dnd.ts';
 
 import type { TIngredient } from '@utils/types';
@@ -23,19 +24,16 @@ type TIngredientSection = {
 type TIngredientCardProps = {
   count: number;
   ingredient: TIngredient;
-  onClick: (ingredient: TIngredient) => void;
 };
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-};
+const selectIngredients = stellarApi.endpoints.getIngredients.select();
 
 const IngredientCard = ({
   count,
   ingredient,
-  onClick,
 }: TIngredientCardProps): React.JSX.Element => {
-  const cardRef = useRef<HTMLButtonElement | null>(null);
+  const location = useLocation();
+  const cardRef = useRef<HTMLAnchorElement | null>(null);
   const [{ isDragging }, drag] = useDrag<TIngredient, unknown, { isDragging: boolean }>(
     () => ({
       collect: (
@@ -52,11 +50,11 @@ const IngredientCard = ({
   drag(cardRef);
 
   return (
-    <button
+    <Link
       className={`${styles.card} ${isDragging ? styles.card_dragging : ''}`}
-      onClick={() => onClick(ingredient)}
       ref={cardRef}
-      type="button"
+      state={{ background: location }}
+      to={`/ingredients/${ingredient._id}`}
     >
       {count > 0 ? <Counter count={count} extraClass={styles.counter} /> : null}
       <img alt={ingredient.name} className={styles.image} src={ingredient.image} />
@@ -65,15 +63,13 @@ const IngredientCard = ({
         <CurrencyIcon type="primary" />
       </div>
       <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
-    </button>
+    </Link>
   );
 };
 
-export const BurgerIngredients = ({
-  ingredients,
-}: TBurgerIngredientsProps): React.JSX.Element => {
-  const dispatch = useAppDispatch();
+export const BurgerIngredients = (): React.JSX.Element => {
   const counters = useAppSelector(selectIngredientCounters);
+  const ingredients = useAppSelector(selectIngredients).data ?? [];
   const [currentTab, setCurrentTab] = useState<TIngredientType>('bun');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRefs = useRef<Record<TIngredientType, HTMLElement | null>>({
@@ -127,10 +123,6 @@ export const BurgerIngredients = ({
     }
   }, []);
 
-  const handleIngredientClick = (ingredient: TIngredient): void => {
-    dispatch(setSelectedIngredient(ingredient));
-  };
-
   return (
     <section className={styles.burger_ingredients}>
       <nav aria-label="Категории ингредиентов">
@@ -172,7 +164,6 @@ export const BurgerIngredients = ({
                   <IngredientCard
                     count={counters[ingredient._id] ?? 0}
                     ingredient={ingredient}
-                    onClick={handleIngredientClick}
                   />
                 </li>
               ))}

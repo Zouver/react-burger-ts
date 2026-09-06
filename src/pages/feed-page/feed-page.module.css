@@ -1,0 +1,5 @@
+.page {
+  width: min(1240px, calc(100% - 32px));
+  margin: 120px auto 0;
+  text-align: center;
+}

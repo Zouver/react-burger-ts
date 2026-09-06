@@ -1,0 +1,17 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  width: min(480px, 100%);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.error {
+  min-height: 24px;
+  color: var(--colors-interface-error);
+  text-align: right;
+}
