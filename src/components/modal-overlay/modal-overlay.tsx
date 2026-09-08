@@ -10,6 +10,7 @@ export const ModalOverlay = ({ onClick }: TModalOverlayProps): React.JSX.Element
       aria-label="Закрыть модальное окно"
       className={styles.overlay}
       onClick={onClick}
+      tabIndex={-1}
       type="button"
     />
   );

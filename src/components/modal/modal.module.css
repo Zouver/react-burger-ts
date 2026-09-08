@@ -38,6 +38,12 @@
   cursor: pointer;
 }
 
+.close:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--colors-interface-accent);
+  outline-offset: 4px;
+}
+
 @media (width <= 768px) {
   .modal {
     width: min(720px, calc(100vw - 16px));
