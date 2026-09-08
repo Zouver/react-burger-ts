@@ -1,0 +1,16 @@
+.list {
+  height: 100%;
+  margin: 0;
+  padding: 0 8px 0 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.item {
+  content-visibility: auto;
+  contain-intrinsic-size: 220px;
+}
+
+.item + .item {
+  margin-top: 16px;
+}
