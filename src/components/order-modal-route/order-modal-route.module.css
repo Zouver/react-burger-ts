@@ -1,0 +1,7 @@
+.status {
+  display: grid;
+  min-height: 320px;
+  place-items: center;
+  color: var(--text-primary-color);
+  text-align: center;
+}

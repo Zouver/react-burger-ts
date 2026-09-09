@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
 import { useLogoutMutation } from '@services/api/stellarApi.ts';
 
@@ -6,6 +6,7 @@ import styles from './profile-page.module.css';
 
 export const ProfilePage = (): React.JSX.Element => {
   const [logout, { isLoading }] = useLogoutMutation();
+  const isOrdersPage = Boolean(useMatch('/profile/orders/*'));
 
   const handleLogout = async (): Promise<void> => {
     if (isLoading) {
@@ -58,7 +59,9 @@ export const ProfilePage = (): React.JSX.Element => {
             </ul>
           </nav>
           <p className="text text_type_main-default text_color_inactive mt-20">
-            В этом разделе вы можете изменить свои персональные данные
+            {isOrdersPage
+              ? 'В этом разделе вы можете просмотреть свою историю заказов'
+              : 'В этом разделе вы можете изменить свои персональные данные'}
           </p>
         </aside>
         <section className={styles.content}>

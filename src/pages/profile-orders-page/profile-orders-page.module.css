@@ -1,3 +1,33 @@
-.placeholder {
-  padding-top: 16px;
+.page {
+  min-height: 0;
+}
+
+.orders {
+  height: calc(100vh - 224px);
+  min-height: 520px;
+}
+
+.status {
+  display: grid;
+  min-height: 320px;
+  place-items: center;
+  color: var(--text-primary-color);
+  text-align: center;
+}
+
+.connection {
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+@media (width <= 900px) {
+  .orders {
+    height: min(720px, calc(100vh - 180px));
+  }
+}
+
+@media (width <= 640px) {
+  .orders {
+    min-height: 420px;
+  }
 }

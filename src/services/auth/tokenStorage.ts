@@ -28,6 +28,14 @@ const removeStorageItem = (key: string): void => {
 
 export const getAccessToken = (): string | null => getStorageItem(ACCESS_TOKEN_KEY);
 
+export const getRawAccessToken = (): string | null => {
+  const accessToken = getAccessToken();
+
+  return accessToken?.startsWith('Bearer ')
+    ? accessToken.slice('Bearer '.length)
+    : accessToken;
+};
+
 export const getRefreshToken = (): string | null => getStorageItem(REFRESH_TOKEN_KEY);
 
 export const saveTokens = (accessToken: string, refreshToken: string): void => {

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import { App } from '@components/app/app';
+import { OrderModalRoute } from '@components/order-modal-route/order-modal-route.tsx';
 import { ProtectedRoute } from '@components/protected-route/protected-route.tsx';
 import { FeedPage } from '@pages/feed-page/feed-page.tsx';
 import { ForgotPasswordPage } from '@pages/forgot-password-page/forgot-password-page.tsx';
@@ -26,6 +27,12 @@ export const router = createBrowserRouter([
         path: 'ingredients/:id',
       },
       {
+        children: [
+          {
+            element: <OrderModalRoute closeTo="/feed" source="all" />,
+            path: ':id',
+          },
+        ],
         element: <FeedPage />,
         path: 'feed',
       },
@@ -59,6 +66,12 @@ export const router = createBrowserRouter([
                 index: true,
               },
               {
+                children: [
+                  {
+                    element: <OrderModalRoute closeTo="/profile/orders" source="user" />,
+                    path: ':id',
+                  },
+                ],
                 element: <ProfileOrdersPage />,
                 path: 'orders',
               },
