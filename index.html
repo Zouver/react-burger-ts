@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/react-burger-ts/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+    <script>
+      (function (location) {
+        if (location.search.startsWith('?/')) {
+          const restoredPath = location.search
+            .slice(2)
+            .split('&')
+            .map((part) => part.replaceAll('~and~', '&'))
+            .join('?');
+
+          window.history.replaceState(
+            null,
+            '',
+            `${location.pathname}${restoredPath}${location.hash}`
+          );
+        }
+      })(window.location);
+    </script>
+    <script type="module" crossorigin src="/react-burger-ts/assets/index-D6P2KMU4.js"></script>
+    <link rel="stylesheet" crossorigin href="/react-burger-ts/assets/index-CwDgjr0X.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
