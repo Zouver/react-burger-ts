@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stellar Burger</title>
+    <script>
+      const repositoryPathSegments = 1;
+      const location = window.location;
+      const basePath = location.pathname
+        .split('/')
+        .slice(0, repositoryPathSegments + 1)
+        .join('/');
+      const routePath = location.pathname
+        .split('/')
+        .slice(repositoryPathSegments + 1)
+        .join('/')
+        .replaceAll('&', '~and~');
+      const query = location.search
+        ? `&${location.search.slice(1).replaceAll('&', '~and~')}`
+        : '';
+
+      location.replace(
+        `${location.origin}${basePath}/?/${routePath}${query}${location.hash}`
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -13,7 +13,7 @@
     "deploy": "gh-pages -d dist",
     "eslint": "eslint ./src/ --fix",
     "lint": "npm run stylelint && npm run eslint && npm run prettier",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build -- --base=/react-burger-ts/",
     "prepare": "husky",
     "prettier": "prettier \"./src/**/*.{js,jsx,ts,tsx,json,html,css,md}\" --write",
     "preview": "vite preview",

@@ -7,6 +7,7 @@ import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [
     checker({
       typescript: true,
@@ -19,7 +20,6 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
-  base: '',
   test: {
     exclude: ['**/e2e/**', '**/node_modules/**', '**/dist/**'],
     globals: true,

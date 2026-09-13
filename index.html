@@ -2,9 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
+    <script>
+      (function (location) {
+        if (location.search.startsWith('?/')) {
+          const restoredPath = location.search
+            .slice(2)
+            .split('&')
+            .map((part) => part.replaceAll('~and~', '&'))
+            .join('?');
+
+          window.history.replaceState(
+            null,
+            '',
+            `${location.pathname}${restoredPath}${location.hash}`
+          );
+        }
+      })(window.location);
+    </script>
   </head>
   <body>
     <div id="root"></div>
