@@ -146,6 +146,7 @@ export const BurgerConstructor = ({
 
   return (
     <section
+      aria-label="Конструктор бургера"
       className={`${styles.burger_constructor} ${isDropActive ? styles.drop_active : ''}`}
       ref={dropRef}
     >
