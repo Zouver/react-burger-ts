@@ -15,7 +15,7 @@ import { ProfilePage } from '@pages/profile-page/profile-page.tsx';
 import { RegisterPage } from '@pages/register-page/register-page.tsx';
 import { ResetPasswordPage } from '@pages/reset-password-page/reset-password-page.tsx';
 
-export const router = createBrowserRouter([
+const routes = [
   {
     children: [
       {
@@ -90,4 +90,8 @@ export const router = createBrowserRouter([
     element: <App />,
     path: '/',
   },
-]);
+];
+
+export const router = createBrowserRouter(routes, {
+  basename: import.meta.env.BASE_URL,
+});

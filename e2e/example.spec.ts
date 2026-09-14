@@ -1,6 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
-test('example', async ({ page }) => {
-  await page.goto('http://localhost:5173');
+import { mockApi } from './fixtures/mock-api.ts';
+
+test('example', async ({ page }): Promise<void> => {
+  await mockApi(page);
+  await page.goto('/');
   await expect(page.getByText('Соберите бургер')).toBeVisible();
 });
