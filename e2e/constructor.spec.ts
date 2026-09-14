@@ -1,20 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-import {
-  authenticatedUserResponse,
-  bun,
-  ingredientsResponse,
-  main,
-  orderResponse,
-} from './fixtures/constructor.ts';
+import { bun, main } from './fixtures/constructor.ts';
+import { mockApi } from './fixtures/mock-api.ts';
 
-const applicationUrl = 'http://127.0.0.1:5173';
 const navigationHistoryKey = 'constructor-e2e-navigation-history';
 const authPathnames = ['/login', '/register', '/forgot-password', '/reset-password'];
 
 test('собирает бургер и оформляет заказ без переходов на auth-страницы', async ({
   page,
 }): Promise<void> => {
+  await mockApi(page);
+
   await page.addInitScript((historyKey: string): void => {
     localStorage.setItem('accessToken', 'Bearer tests-access-token');
     localStorage.setItem('refreshToken', 'tests-refresh-token');
@@ -42,25 +38,7 @@ test('собирает бургер и оформляет заказ без пе
     recordPathname();
   }, navigationHistoryKey);
 
-  await page.route('**/api/ingredients', async (route): Promise<void> => {
-    await route.fulfill({ json: ingredientsResponse });
-  });
-  await page.route('**/api/auth/user', async (route): Promise<void> => {
-    await route.fulfill({ json: authenticatedUserResponse });
-  });
-  await page.route('**/api/orders', async (route): Promise<void> => {
-    const request = route.request();
-
-    expect(request.method()).toBe('POST');
-    expect(request.postDataJSON()).toEqual({
-      ingredients: [bun._id, main._id, bun._id],
-    });
-    expect(request.headers().authorization).toBe('Bearer tests-access-token');
-
-    await route.fulfill({ json: orderResponse });
-  });
-
-  await page.goto(applicationUrl);
+  await page.goto('/');
   await expect(
     page.getByRole('heading', { level: 1, name: 'Соберите бургер' })
   ).toBeVisible();
@@ -95,7 +73,7 @@ test('собирает бургер и оформляет заказ без пе
   await page.keyboard.press('Escape');
 
   await expect(ingredientDialog).toBeHidden();
-  await expect(page).toHaveURL(`${applicationUrl}/`);
+  await expect(page).toHaveURL('/');
 
   const bunCard = page.getByText(bun.name, { exact: true }).locator('..');
   const constructor = page.getByRole('region', { name: 'Конструктор бургера' });
@@ -121,9 +99,18 @@ test('собирает бургер и оформляет заказ без пе
   ).toBeVisible();
 
   const createOrderButton = page.getByRole('button', { name: 'Оформить заказ' });
+  const orderRequestPromise = page.waitForRequest('**/api/orders');
 
   await expect(createOrderButton).toBeEnabled();
   await createOrderButton.click();
+
+  const orderRequest = await orderRequestPromise;
+
+  expect(orderRequest.method()).toBe('POST');
+  expect(orderRequest.postDataJSON()).toEqual({
+    ingredients: [bun._id, main._id, bun._id],
+  });
+  expect(orderRequest.headers().authorization).toBe('Bearer tests-access-token');
 
   const orderDialog = page.getByRole('dialog', { name: 'Детали заказа' });
 
@@ -145,7 +132,7 @@ test('собирает бургер и оформляет заказ без пе
     .click({ position: { x: 20, y: 20 } });
 
   await expect(orderDialog).toBeHidden();
-  await expect(page).toHaveURL(`${applicationUrl}/`);
+  await expect(page).toHaveURL('/');
 
   const visitedPathnames = await page.evaluate(
     (historyKey: string): string[] =>
