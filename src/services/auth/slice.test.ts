@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { authSlice, resetAuthState, setAuthChecked, setUser } from './authSlice.ts';
+import {
+  authSlice,
+  initialState,
+  resetAuthState,
+  setAuthChecked,
+  setUser,
+} from './authSlice.ts';
 
 import type { TUser } from '@utils/types.ts';
 
@@ -11,11 +17,7 @@ const user: TUser = {
 
 describe('authSlice reducer', (): void => {
   it('возвращает начальное состояние для неизвестного action', (): void => {
-    expect(authSlice.reducer(undefined, { type: 'unknown' })).toEqual({
-      isAuthChecked: false,
-      isAuthenticated: false,
-      user: null,
-    });
+    expect(authSlice.reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('изменяет только признак завершённой проверки авторизации', (): void => {
@@ -30,6 +32,7 @@ describe('authSlice reducer', (): void => {
 
   it('сохраняет пользователя и отмечает сессию авторизованной', (): void => {
     expect(authSlice.reducer(undefined, setUser(user))).toEqual({
+      ...initialState,
       isAuthChecked: true,
       isAuthenticated: true,
       user,
@@ -40,9 +43,8 @@ describe('authSlice reducer', (): void => {
     const authenticatedState = authSlice.reducer(undefined, setUser(user));
 
     expect(authSlice.reducer(authenticatedState, resetAuthState())).toEqual({
+      ...initialState,
       isAuthChecked: true,
-      isAuthenticated: false,
-      user: null,
     });
   });
 });

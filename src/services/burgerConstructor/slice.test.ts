@@ -4,6 +4,7 @@ import {
   addIngredient,
   burgerConstructorSlice,
   clearBurgerConstructor,
+  initialState,
   moveIngredient,
   removeIngredient,
 } from './burgerConstructorSlice.ts';
@@ -31,18 +32,17 @@ const sauce = createIngredient('sauce', 'sauce');
 
 describe('burgerConstructorSlice reducer', (): void => {
   it('возвращает начальное состояние и заменяет булку при повторном добавлении', (): void => {
-    expect(burgerConstructorSlice.reducer(undefined, { type: 'unknown' })).toEqual({
-      bun: null,
-      ingredients: [],
-    });
+    expect(burgerConstructorSlice.reducer(undefined, { type: 'unknown' })).toEqual(
+      initialState
+    );
 
     const stateWithBun = burgerConstructorSlice.reducer(undefined, addIngredient(bun));
-    expect(stateWithBun).toEqual({ bun, ingredients: [] });
+    expect(stateWithBun).toEqual({ ...initialState, bun });
 
     const secondBun = createIngredient('second-bun', 'bun');
     expect(
       burgerConstructorSlice.reducer(stateWithBun, addIngredient(secondBun))
-    ).toEqual({ bun: secondBun, ingredients: [] });
+    ).toEqual({ ...initialState, bun: secondBun });
   });
 
   it('добавляет обычные ингредиенты с уникальными constructorId', (): void => {
@@ -79,7 +79,7 @@ describe('burgerConstructorSlice reducer', (): void => {
     expect(stateWithoutFirst.ingredients[0]).toMatchObject(sauce);
     expect(
       burgerConstructorSlice.reducer(stateWithoutFirst, clearBurgerConstructor())
-    ).toEqual({ bun: null, ingredients: [] });
+    ).toEqual(initialState);
   });
 
   it('переставляет ингредиенты и не меняет состояние при неверном индексе', (): void => {

@@ -10,7 +10,7 @@ type TAuthState = {
   user: TUser | null;
 };
 
-const initialState: TAuthState = {
+export const initialState: TAuthState = {
   isAuthChecked: false,
   isAuthenticated: false,
   user: null,
